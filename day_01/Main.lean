@@ -6,3 +6,5 @@ def main : IO Unit := do
   IO.println s!"{str}"
   IO.println s!"Input Data: {x}"
   IO.println s!"Hello, {hello}!"
+
+-- #eval (main)

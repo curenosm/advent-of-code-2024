@@ -28,7 +28,7 @@ def Balls.singleFromString! (s : String) : Balls :=
   | c::["red"] => { red := c.toNat! }
   | c::["blue"] => { blue := c.toNat! }
   | c::["green"] => { green := c.toNat! }
-  | _ => panic s!"{s} invalid"    
+  | _ => panic s!"{s} invalid"
 
 def Balls.fromString! (s : String) : Balls :=
   ((s.splitOn ",").map Balls.singleFromString!).foldl (λa b => a + b) {}
