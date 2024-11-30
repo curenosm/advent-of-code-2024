@@ -15,7 +15,7 @@ def String.partitionUntil (s : String) (f : Char -> Bool) : String × String :=
 
 def String.partitionWhile (s : String) (f : Char -> Bool) : String × String :=
   let rest := s.dropWhile f
-  (s.take (s.length - rest.length), rest) 
+  (s.take (s.length - rest.length), rest)
 
 def String.last! (s : String) : Char :=
   (String.mk s.toList.reverse).get! 0
@@ -41,7 +41,7 @@ def Coordinates.addCoords (c : Coordinates) (num : Nat) (y : Nat) (xStart : Nat)
   Coordinates.addCoords (c.insert (xStart, y) num) num y (xStart + 1) toAdd
 
 partial def numberCoordinatesInLine (l : String) (y : Nat) (x : Nat) (c: Coordinates) : Coordinates :=
-  if l.isEmpty then c else 
+  if l.isEmpty then c else
   let (prev, l) := l.partitionUntil Char.isDigit
   if l.isEmpty then c else
   let x := x + prev.length
@@ -57,8 +57,7 @@ def adjacentCoords (as : (Int × Int)) : List (Int × Int) :=
    (as.1 + 1, as.2 + 1),
    (as.1, as.2 + 1),
    (as.1 - 1, as.2 + 1),
-   (as.1 + 1, as.2 - 1)] 
+   (as.1 + 1, as.2 - 1)]
 
 def readInputData : IO String :=
   IO.FS.readFile s!"./data/input.txt"
-

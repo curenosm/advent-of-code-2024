@@ -30,3 +30,17 @@ cd day_<day_number>
 cd day_<day_number>
 .\.lake\build\bin\day_<day_number>.exe
 ```
+
+## Fixing Common Issues
+
+If you get errors like this:
+
+```bash
+error: .\lakefile.lean:4:7: error: unexpected token; expected identifier
+```
+
+Probably you need to set the toolchains for the given package:
+
+```bash
+elan override set 4.13.0
+```
