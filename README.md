@@ -6,6 +6,13 @@
 - `lean`: `4.13.0`
 - `lake`: `5.0.0`
 
+## Running Single File Script
+
+```bash
+cd commons
+lean --run ImperativeExample.lean arg1 arg2 arg3
+```
+
 ## Compilation Instructions
 
 ### Linux / Mac OS / Windows
