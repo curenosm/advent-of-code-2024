@@ -1,51 +1,14 @@
-structure Balls where
-  red : Nat := 0
-  green : Nat := 0
-  blue : Nat := 0
+structure Pair where
+  first : Int
+  second : Int
 deriving Repr, Inhabited
-
-structure Game where
-  id : Nat
-  draws : List Balls
-deriving Repr, Inhabited
-
-instance : Max Balls where
-  max b1 b2 := {
-    red := max b1.red b2.red,
-    green := max b1.green b2.green,
-    blue := max b1.blue b2.blue
-  }
-
-instance : Add Balls where
-  add b1 b2 := {
-    red := b1.red + b2.red,
-    green := b1.green + b2.green,
-    blue := b1.blue + b2.blue
-  }
-
-def Balls.singleFromString! (s : String) : Balls :=
-  match (s.dropWhile (λa => a == ' ')).splitOn " " with
-  | c::["red"] => { red := c.toNat! }
-  | c::["blue"] => { blue := c.toNat! }
-  | c::["green"] => { green := c.toNat! }
-  | _ => panic s!"{s} invalid"
-
-def Balls.fromString! (s : String) : Balls :=
-  ((s.splitOn ",").map Balls.singleFromString!).foldl (λa b => a + b) {}
-
-def Game.fromString! (s : String) : Game :=
-  match s.splitOn ":" with
-  | game::[balls] => match game.splitOn " " with
-    | "Game"::[num] => { id := num.toNat!, draws := (balls.splitOn ";").map Balls.fromString! }
-    | _ => panic! s!"{game} invalid game"
-  | _ => panic s!"{s} invalid line (multiple colons?)"
-
--- #eval Balls.fromString! "2 red, 2 blue, 2 green"
-
-def hello := "world"
 
 def lines (s : String) : List String :=
-    s.splitOn "\n"
+  (s.splitOn "\n").filter (λl => !l.isEmpty)
 
-def readInputData : IO String :=
-  IO.FS.readFile s!"./data/input.txt"
+def readInputData : IO String := IO.FS.readFile s!"./data/input.txt"
+
+def Pair.fromString! (s: String) : Pair :=
+  match (s.splitOn " ").filter (λn => !n.isEmpty) with
+  | first::second::[] => { first := first.toInt!, second := second.toInt! }
+  | _ => panic s!"{s} invalid"
