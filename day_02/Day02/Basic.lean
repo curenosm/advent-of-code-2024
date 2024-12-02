@@ -1,63 +1,43 @@
+/-
 import Lean.Data.HashMap
 import Lean.Data.HashSet
 
-def hello := "world"
-
-def Char.isSymbol (c : Char) : Bool :=
-  !c.isDigit && c != '.'
-
-def String.partition (s : String) (n : Nat) : String × String :=
-  (s.take n, s.drop n)
-
-def String.partitionUntil (s : String) (f : Char -> Bool) : String × String :=
-  let rest := s.dropWhile (λx => !f x)
-  (s.take (s.length - rest.length), rest)
-
-def String.partitionWhile (s : String) (f : Char -> Bool) : String × String :=
-  let rest := s.dropWhile f
-  (s.take (s.length - rest.length), rest)
-
-def String.last! (s : String) : Char :=
-  (String.mk s.toList.reverse).get! 0
-
-structure ThreeLines where
-  prev : String
-  curr : String
-  nect : String
-deriving Repr, Inhabited
-
-def ThreeLines.isEmpty (t : ThreeLines) : Bool :=
-  t.curr.isEmpty
-
 open Lean (HashMap)
 open Lean (HashSet)
+-/
 
-def Coordinates := HashMap (Int × Int) Nat
+structure Report where
+  levels: List Int
+deriving Repr, Inhabited
 
-def Coordinates.addCoords (c : Coordinates) (num : Nat) (y : Nat) (xStart : Nat) (toAdd : Nat) : Coordinates :=
-  match toAdd with
-  | 0 => c
-  | Nat.succ toAdd =>
-  Coordinates.addCoords (c.insert (xStart, y) num) num y (xStart + 1) toAdd
-
-partial def numberCoordinatesInLine (l : String) (y : Nat) (x : Nat) (c: Coordinates) : Coordinates :=
-  if l.isEmpty then c else
-  let (prev, l) := l.partitionUntil Char.isDigit
-  if l.isEmpty then c else
-  let x := x + prev.length
-  let (numS, after) := l.partitionWhile Char.isDigit
-  let num := numS.toNat!
-  numberCoordinatesInLine after y (x + numS.length) (c.addCoords num y x numS.length)
-
-def adjacentCoords (as : (Int × Int)) : List (Int × Int) :=
-  [(as.1 - 1, as.2 - 1),
-   (as.1, as.2 - 1),
-   (as.1 - 1, as.2),
-   (as.1 + 1, as.2),
-   (as.1 + 1, as.2 + 1),
-   (as.1, as.2 + 1),
-   (as.1 - 1, as.2 + 1),
-   (as.1 + 1, as.2 - 1)]
+def hello := "world"
 
 def readInputData : IO String :=
   IO.FS.readFile s!"./data/input.txt"
+
+def lines (s : String) : List String :=
+  (s.splitOn "\n").filter (λl => !l.isEmpty)
+
+def String.parseIntList (s : String) : List Int :=
+  ((s.trim.splitOn " ").map String.toInt?).filterMap id
+
+def Report.fromString! (s: String) : Report :=
+  { levels := s.parseIntList }
+
+def Report.isStrictlyIncreasing (levels : List Int) : Bool := match levels with
+  | [] => true
+  | [_] => true
+  | l₁::l₂::ls => l₁ < l₂ && Report.isStrictlyIncreasing (l₂::ls)
+
+def Report.isStrictlyDecreasing (levels : List Int) : Bool := match levels with
+  | [] => true
+  | [_] => true
+  | l₁::l₂::ls => l₁ > l₂ && Report.isStrictlyDecreasing (l₂::ls)
+
+def Report.changesGradually (levels: List Int) (min : Nat) (max : Nat) : Bool :=
+  match levels with
+  | [] => true
+  | [_] => true
+  | l₁::l₂::ls =>
+    let diff := (l₂ - l₁).natAbs
+    min <= diff && diff <= max && (Report.changesGradually (l₂::ls) min max)
