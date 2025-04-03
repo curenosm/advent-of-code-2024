@@ -12,3 +12,5 @@ def main (args : List String) : IO Unit := do
   IO.print "ran "
   IO.print (toString map.size)
   IO.println " map inserts\n"
+
+#eval (main [])
